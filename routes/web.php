@@ -15,3 +15,4 @@ use App\Http\Controllers\QuestionsController;
 */
 
 Route::get('/questions', [QuestionsController::class, 'index']);
+Route::get('/questions/{question}', [QuestionsController::class, 'show']);
