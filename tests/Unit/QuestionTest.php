@@ -20,4 +20,18 @@ class QuestionTest extends TestCase
 
         $this->assertInstanceOf(HasMany::class, $question->answers());
     }
+
+    /** @test  */
+    public function questions_with_published_at_date_are_published()
+    {
+        $publishedQuestion1 = Question::factory()->published()->create();
+        $publishedQuestion2 = Question::factory()->published()->create();
+        $unpublishedQuestion = Question::factory()->unpublished()->create();
+
+        $publishedQuestions = Question::query()->published()->get();
+
+        $this->assertTrue($publishedQuestions->contains($publishedQuestion1));
+        $this->assertTrue($publishedQuestions->contains($publishedQuestion2));
+        $this->assertFalse($publishedQuestions->contains($unpublishedQuestion));
+    }
 }
