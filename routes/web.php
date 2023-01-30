@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnswersController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuestionsController;
 
@@ -16,3 +17,4 @@ use App\Http\Controllers\QuestionsController;
 
 Route::get('/questions', [QuestionsController::class, 'index']);
 Route::get('/questions/{question}', [QuestionsController::class, 'show']);
+Route::post('/questions/{question}/answers', [AnswersController::class, 'store']);
