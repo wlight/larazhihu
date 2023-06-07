@@ -15,6 +15,8 @@ use App\Http\Controllers\QuestionsController;
 |
 */
 
+Auth::routes();
+
 Route::get('/questions', [QuestionsController::class, 'index']);
 Route::get('/questions/{question}', [QuestionsController::class, 'show']);
 Route::post('/questions/{question}/answers', [AnswersController::class, 'store']);
