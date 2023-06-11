@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
@@ -12,12 +13,26 @@ use Tests\TestCase;
 class PostAnswersTest extends TestCase
 {
     use RefreshDatabase;
+
+    /** @test **/
+    public function guests_may_not_post_an_answer()
+    {
+        $this->expectException(AuthenticationException::class);
+        $question = Question::factory()->published()->create();
+
+        $response = $this->post("/questions/{$question->id}/answers", [
+            'content' => 'This is a answer.'
+        ]);
+
+        // $response->assertStatus(302)->assertRedirect('/login');
+    }
+
     /** @test */
     public function user_can_post_an_answer_to_a_published_question()
     {
         // 假设已存在某个问题
         $question = Question::factory()->published()->create();
-        $user = User::factory()->create();
+        $this->actingAs($user = User::factory()->create());
         // 然后访问路由进行回答
         $response = $this->post("/questions/{$question->id}/answers", [
             'user_id' => $user->id,
@@ -25,7 +40,7 @@ class PostAnswersTest extends TestCase
         ]);
 
         // 看到预期的结果
-        $response->assertStatus(201);
+        $response->assertStatus(302);
         $answer = $question->answers()->where('user_id', $user->id)->first();
         $this->assertNotNull($answer);
 
@@ -36,7 +51,7 @@ class PostAnswersTest extends TestCase
     public function can_not_post_an_answer_to_an_unpublished_question()
     {
         $question = Question::factory()->unpublished()->create();
-        $user = User::factory()->create();
+        $this->actingAs($user = User::factory()->create());
 
         $response = $this->withExceptionHandling()
             ->post("/questions/{$question->id}/answers", [
@@ -55,7 +70,7 @@ class PostAnswersTest extends TestCase
         $this->withExceptionHandling();
 
         $question = Question::factory()->published()->create();
-        $user = User::factory()->create();
+        $this->actingAs($user = User::factory()->create());
 
         $response = $this->post("/questions/{$question->id}/answers", [
             'user_id' => $user->id,
@@ -79,7 +94,7 @@ class PostAnswersTest extends TestCase
         ]);
 
         // 看到预期的结果
-        $response->assertStatus(201);
+        $response->assertStatus(302);
         $answer = $question->answers()->where('user_id', $user->id)->first();
         $this->assertNotNull($answer);
 
