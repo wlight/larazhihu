@@ -26,9 +26,8 @@ class ViewQuestionsTest extends TestCase
     public function user_can_view_a_single_question()
     {
         // 1. 创建一个问题
-        $question = Question::factory()->create([
-            'published_at' => Carbon::parse('-1 day')
-        ]);
+        $question = create(Question::class, ['published_at' => Carbon::parse('-1 day')]);
+
         // 2. 访问链接
         $test = $this->withExceptionHandling()->get('/questions/' . $question->id);
         // 3. 应该看到的问题内容
@@ -40,7 +39,7 @@ class ViewQuestionsTest extends TestCase
     /** @test */
     public function user_can_view_a_published_question()
     {
-        $question = Question::factory()->create(['published_at' => Carbon::parse('-1 week')]);
+        $question = Question::factory()->published()->create();
 
         $this->get('/questions/' . $question->id)
             ->assertStatus(200)
@@ -51,7 +50,7 @@ class ViewQuestionsTest extends TestCase
     /** @test */
     public function user_cannot_view_unpublished_question()
     {
-        $question = Question::factory()->create(['published_at' => null]);
+        $question = create(Question::class, ['published_at' => null]);
 
         $this->withExceptionHandling()
             ->get('/questions/' . $question->id)
@@ -61,13 +60,9 @@ class ViewQuestionsTest extends TestCase
     /** @test */
     public function questions_with_published_at_date_published()
     {
-        $question1 = Question::factory()->create([
-            'published_at' => Carbon::parse('-1 week')
-        ]);
-        $question2 = Question::factory()->create([
-            'published_at' => Carbon::parse('-1 week')
-        ]);
-        $unpublishQuestion = Question::factory()->create();
+        $question1 = Question::factory()->published()->create();
+        $question2 = Question::factory()->published()->create();
+        $unpublishQuestion = create(Question::class);
 
         $publishQuestions = Question::published()->get();
 

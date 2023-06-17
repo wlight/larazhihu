@@ -32,7 +32,9 @@ class PostAnswersTest extends TestCase
     {
         // 假设已存在某个问题
         $question = Question::factory()->published()->create();
-        $this->actingAs($user = User::factory()->create());
+
+        $this->signIn($user = create(User::class));
+
         // 然后访问路由进行回答
         $response = $this->post("/questions/{$question->id}/answers", [
             'user_id' => $user->id,
@@ -51,7 +53,7 @@ class PostAnswersTest extends TestCase
     public function can_not_post_an_answer_to_an_unpublished_question()
     {
         $question = Question::factory()->unpublished()->create();
-        $this->actingAs($user = User::factory()->create());
+        $this->signIn($user = create(User::class));
 
         $response = $this->withExceptionHandling()
             ->post("/questions/{$question->id}/answers", [
@@ -70,7 +72,7 @@ class PostAnswersTest extends TestCase
         $this->withExceptionHandling();
 
         $question = Question::factory()->published()->create();
-        $this->actingAs($user = User::factory()->create());
+        $this->signIn($user = create(User::class));
 
         $response = $this->post("/questions/{$question->id}/answers", [
             'user_id' => $user->id,
@@ -87,7 +89,7 @@ class PostAnswersTest extends TestCase
     {
         // 假设已存在某个问题
         $question = Question::factory()->published()->create();
-        $this->actingAs($user = User::factory()->create());
+        $this->signIn($user = create(User::class));
         // 然后访问路由进行回答
         $response = $this->post("/questions/{$question->id}/answers", [
             'content' => 'This is an answer.'
